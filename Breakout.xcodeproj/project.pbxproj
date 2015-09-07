@@ -199,6 +199,7 @@
 		E43C5D4D1B996ED200A06171 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Tatiana Kornilova";
 				TargetAttributes = {
@@ -463,6 +464,7 @@
 				E43C5D761B996ED200A06171 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E43C5D771B996ED200A06171 /* Build configuration list for PBXNativeTarget "BreakoutTests" */ = {
 			isa = XCConfigurationList;
@@ -471,6 +473,7 @@
 				E43C5D791B996ED200A06171 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

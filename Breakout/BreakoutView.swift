@@ -9,29 +9,14 @@
 import UIKit
 class BreakoutView: UIView {
 
-  struct Constants {
-        static let selfBoundaryId = "selfBoundary"
-        static let paddleBoundaryId = "paddleBoundary"
-        static let BallSize = CGSize(width: 20, height: 20)
-        static let BallSpacing: CGFloat = 3
-
-        static let PaddleBottomMargin: CGFloat = 10.0
-        static let PaddleHeight: Int = 15
-        static let PaddleColor = UIColor.whiteColor()
-        static let BrickHeight: CGFloat = 20.0
-        static let BrickSpacing: CGFloat = 5.0
-        static let BricksTopSpacing: CGFloat = 20.0
-        static let BrickSideSpacing: CGFloat = 10.0
-    }
-    
  lazy var animator: UIDynamicAnimator = { UIDynamicAnimator(referenceView: self) }()
     var behavior = BreakoutBehavior()
     
     var balls = [BallView]()
     var bricks =  [Int:BrickView]()
     
-    lazy var paddle: PaddleView = {
-        let width = self.bounds.size.width / 100.0 * CGFloat(self.paddleWidthPercentage) //CGFloat(Settings().paddleWidth)
+    private lazy var paddle: PaddleView = {
+        let width = self.bounds.size.width / 100.0 * CGFloat(self.paddleWidthPercentage)
         let paddleSize = CGSize(width: width, height: CGFloat(Constants.PaddleHeight))
 
         let frame = CGRect(origin: CGPoint(x: -1, y: -1), size: paddleSize )
@@ -40,7 +25,6 @@ class BreakoutView: UIView {
         return paddle;
         }()
     
-    var columns: Int?
     var level :[[Int]]? {
         didSet {
             if let newLevel = level ,let oldLevel = oldValue{
@@ -51,6 +35,8 @@ class BreakoutView: UIView {
         }
     }
     
+    private var columns: Int?
+  
     // MARK: - LIFE CYCLE
     
     func initialize() {
@@ -82,7 +68,7 @@ class BreakoutView: UIView {
 
     
     // Remove all subviews
-    func clearView() {
+    private func clearView() {
         for subView in subviews {
             if let view = subView as? UIView {
                 view.removeFromSuperview()
@@ -110,7 +96,9 @@ class BreakoutView: UIView {
     // MARK: - BALLS
   
     func addBall() {
-        let ball = BallView(frame: CGRect(origin: CGPoint(x: paddle.center.x, y: paddle.frame.minY - Constants.BallSize.height), size: Constants.BallSize))
+        let ball = BallView(frame: CGRect(origin: CGPoint(x: paddle.center.x,
+                                                          y: paddle.frame.minY - Constants.BallSize.height),
+                                                       size: Constants.BallSize))
         balls.append(ball)
         self.behavior.addBall(ball)
     }
@@ -128,7 +116,6 @@ class BreakoutView: UIView {
     
 
     // MARK: - BRICKS
-
     
     func createBricks() {
         if let arrangement = level {
@@ -253,4 +240,19 @@ class BreakoutView: UIView {
         behavior.addBoundary(UIBezierPath(ovalInRect: paddle.frame), named: Constants.paddleBoundaryId)
     }
 
+    struct Constants {
+        static let selfBoundaryId = "selfBoundary"
+        static let paddleBoundaryId = "paddleBoundary"
+        static let BallSize = CGSize(width: 20, height: 20)
+        static let BallSpacing: CGFloat = 3
+        
+        static let PaddleBottomMargin: CGFloat = 10.0
+        static let PaddleHeight: Int = 15
+        static let PaddleColor = UIColor.whiteColor()
+        static let BrickHeight: CGFloat = 20.0
+        static let BrickSpacing: CGFloat = 5.0
+        static let BricksTopSpacing: CGFloat = 20.0
+        static let BrickSideSpacing: CGFloat = 10.0
+    }
+    
 }

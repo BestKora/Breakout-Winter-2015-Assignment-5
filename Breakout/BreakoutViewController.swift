@@ -10,21 +10,6 @@ import UIKit
 import CoreMotion
 
 class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegate {
-    private struct Const {
-        static let gameOverTitle = "Game over!"
-        static let congratulationsTitle = "Congratulations!"
-        
-        static let gamefieldBoundaryId = "gamefieldBoundary"
-        static let paddleBoundaryId = "paddleBoundary"
-        
-        static let minBallLaunchAngle = 210
-        static let maxBallLaunchAngle = 330
-        static let minLaunchSpeed = CGFloat(0.2)
-        static let maxLaunchSpeed = CGFloat(0.8)
-        static let pushSpeed = CGFloat(0.05)
-        
-        static let maxPaddleSpeed = 25.0
-    }
 
     @IBOutlet var breakoutView: BreakoutView!{
         didSet{
@@ -38,27 +23,27 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     @IBOutlet var ballsLeftLabel: UILabel!
     @IBOutlet var scoreLabel: UILabel!
     
-    let motionManager = CMMotionManager()
-    let settings = Settings()
-    private var firstTimeLoading = true
-    private var ballVelocity = [CGPoint]()
-    private var gameViewSizeChanged = true
-
-    
-    private var launchSpeedModifier = Settings().ballSpeedModifier
-    
     private var maxBalls: Int = Settings().maxBalls {
         didSet { ballsLeftLabel?.text = "⦁".repeat(maxBalls - ballsUsed) }
     }
-
+    
     private var ballsUsed = 0 {
         didSet { ballsLeftLabel?.text = "⦁".repeat(maxBalls - ballsUsed) }
     }
     
-    private var score = 0
-        {
+    private var score = 0 {
         didSet{ scoreLabel?.text = "\(score)" }
     }
+    
+    private var launchSpeedModifier = Settings().ballSpeedModifier
+
+   
+    private var ballVelocity = [CGPoint]()
+    private var gameViewSizeChanged = true
+    
+    private let motionManager = CMMotionManager()
+    private let settings = Settings()
+
     // MARK: - LIFE CYCLE
 
     override func viewDidLoad() {
@@ -103,6 +88,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         // Reset bricks when rotation changes
         if gameViewSizeChanged {
             gameViewSizeChanged = false
@@ -112,9 +98,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     
   // MARK: - Load SEIITINGS
     
-   func loadSettings() {
-        
-        // check if we need to reset the game
+   private func loadSettings() {
         
         // Setup accelerometer
         if settings.controlWithTilt {
@@ -136,8 +120,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     }
     
     // MARK: - RESET GAME
-
-    func resetGame()
+   private func resetGame()
     {
         breakoutView.reset()
         ballsUsed = 0
@@ -165,7 +148,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     
     // MARK: - ALERT
     
-    func showGameEndedAlert(playerWon: Bool, message: String) {
+    private func showGameEndedAlert(playerWon: Bool, message: String) {
         let title = playerWon ? Const.congratulationsTitle : Const.gameOverTitle
         var alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
 
@@ -186,6 +169,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         return true;
     }
     // on device shake
+    
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent) {
         pushBalls()
     }
@@ -207,7 +191,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         }
     }
     
-    func pushBalls(){
+   func pushBalls(){
         for ball in breakoutView.balls {
             breakoutView.behavior.launchBall(ball, magnitude: Const.pushSpeed)
         }
@@ -221,5 +205,21 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             gesture.setTranslation(CGPointZero, inView: breakoutView)
         default: break
         }
+    }
+    
+    private struct Const {
+        static let gameOverTitle = "Game over!"
+        static let congratulationsTitle = "Congratulations!"
+        
+        static let gamefieldBoundaryId = "gamefieldBoundary"
+        static let paddleBoundaryId = "paddleBoundary"
+        
+        static let minBallLaunchAngle = 210
+        static let maxBallLaunchAngle = 330
+        static let minLaunchSpeed = CGFloat(0.2)
+        static let maxLaunchSpeed = CGFloat(0.8)
+        static let pushSpeed = CGFloat(0.05)
+        
+        static let maxPaddleSpeed = 25.0
     }
 }
