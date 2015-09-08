@@ -86,9 +86,6 @@ import UIKit
     func removeBoundary (identifier: NSCopying) {
         collider.removeBoundaryWithIdentifier(identifier)
     }
-    func removeAllBoundaries() {
-        collider.removeAllBoundaries()
-    }
 
     func collisionBehavior(behavior: UICollisionBehavior, beganContactForItem item: UIDynamicItem, withBoundaryIdentifier boundaryId: NSCopying, atPoint p: CGPoint) {
         if let brickIndex = boundaryId as? Int {

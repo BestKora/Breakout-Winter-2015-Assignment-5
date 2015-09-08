@@ -16,7 +16,6 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             breakoutView.initialize()
             breakoutView.paddleWidthPercentage = settings.paddleWidth
             breakoutView.level = settings.level
-            breakoutView.initialize()
      }
     }
     
@@ -93,6 +92,8 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         if gameViewSizeChanged {
             gameViewSizeChanged = false
             breakoutView.resetBricks()
+            breakoutView.resetPaddleInCenter()
+
         }
     }
     
@@ -125,7 +126,6 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         breakoutView.reset()
         ballsUsed = 0
         score = 0
-        breakoutView.resetLayout()
     }
     
     // MARK: - Hit BRICK
@@ -134,14 +134,14 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
        breakoutView.removeBrick(brickIndex)
         score++
         if breakoutView.bricks.count == 0 {
-            showGameEndedAlert(true, message: "You beat the game!")
+            showGameEndedAlert(true, message: "Выигрыш!")
         }
     }
     
     func ballLeftPlayingField(ball: BallView)
     {
         if(ballsUsed == maxBalls) { // the last ball just left the playing field
-             showGameEndedAlert(false, message: "You are out of balls!")
+             showGameEndedAlert(false, message: "Нет мячиков!")
         }
         breakoutView.removeBall(ball)
     }
@@ -161,8 +161,8 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             (action) in
             // do nothing
             })
-        
-        presentViewController(alert, animated: true, completion: nil)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.presentViewController(alert, animated: true, completion: nil)}
     }
     
     override func canBecomeFirstResponder() -> Bool {
