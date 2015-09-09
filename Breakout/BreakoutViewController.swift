@@ -16,6 +16,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             breakoutView.initialize()
             breakoutView.paddleWidthPercentage = settings.paddleWidth
             breakoutView.level = settings.level
+            breakoutView.launchSpeedModifier = settings.ballSpeedModifier
      }
     }
     
@@ -34,9 +35,6 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         didSet{ scoreLabel?.text = "\(score)" }
     }
     
-    private var launchSpeedModifier = Settings().ballSpeedModifier
-
-   
     private var ballVelocity = [CGPoint]()
     private var gameViewSizeChanged = true
     
@@ -111,11 +109,10 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             }
         }
         maxBalls = settings.maxBalls
-        launchSpeedModifier =  settings.ballSpeedModifier
+    
         breakoutView.paddleWidthPercentage = settings.paddleWidth
         breakoutView.level = settings.level
-
-        
+        breakoutView.launchSpeedModifier = settings.ballSpeedModifier
         
     }
     
@@ -133,6 +130,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
        breakoutView.removeBrick(brickIndex)
         score++
         if breakoutView.bricks.count == 0 {
+            breakoutView.removeAllBalls()
             showGameEndedAlert(true, message: "Выигрыш!")
         }
     }
@@ -170,7 +168,7 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     // on device shake
     
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent) {
-        pushBalls()
+        breakoutView.pushBalls()
     }
 
    // MARK: - GESTURES
@@ -181,18 +179,9 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
             if ballsUsed < maxBalls {
                 ballsUsed++;
                 breakoutView.addBall()
-                
-                var launchSpeed = Const.minLaunchSpeed + (Const.maxLaunchSpeed - Const.minLaunchSpeed) * CGFloat(launchSpeedModifier)
-                breakoutView.behavior.launchBall(breakoutView.balls.last!, magnitude: launchSpeed, minAngle: Const.minBallLaunchAngle, maxAngle: Const.maxBallLaunchAngle)
             } else {
-                pushBalls()
+                breakoutView.pushBalls()
             }
-        }
-    }
-    
-   func pushBalls(){
-        for ball in breakoutView.balls {
-            breakoutView.behavior.launchBall(ball, magnitude: Const.pushSpeed)
         }
     }
     
@@ -209,9 +198,6 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     private struct Const {
         static let gameOverTitle = "Game over!"
         static let congratulationsTitle = "Congratulations!"
-        
-        static let gamefieldBoundaryId = "gamefieldBoundary"
-        static let paddleBoundaryId = "paddleBoundary"
         
         static let minBallLaunchAngle = 210
         static let maxBallLaunchAngle = 330

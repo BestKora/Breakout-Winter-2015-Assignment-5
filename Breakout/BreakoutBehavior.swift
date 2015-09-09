@@ -26,6 +26,7 @@ import UIKit
 
     class BreakoutBehavior: UIDynamicBehavior, UICollisionBehaviorDelegate {
         weak var breakoutCollisionDelegate: BreakoutCollisionBehaviorDelegate?
+
         let gravity = UIGravityBehavior()
         
         var collisionDelegate: UICollisionBehaviorDelegate? {
@@ -154,12 +155,24 @@ import UIKit
         func limitLinearVelocity(min: CGFloat, max: CGFloat, forItem item: UIDynamicItem) {
             assert(min < max, "min < max")
             let itemVelocity = linearVelocityForItem(item)
-            if itemVelocity.magnitude < 0.0 { return }
-            if itemVelocity.magnitude < min {
+             (item as! BallView).backgroundColor = UIColor.whiteColor()
+            switch itemVelocity.magnitude {
+            case  let x where x < CGFloat(700.0) :
+                 (item as! BallView).backgroundColor = UIColor.yellowColor()
+            case  let x where x < 900 && x >= 700 :
+                 (item as! BallView).backgroundColor = UIColor.orangeColor()
+            case  let x where x  < 1100 && x >= 900 :
+                 (item as! BallView).backgroundColor = UIColor.redColor()
+            case  let x where  x >= 1100 :
+                 (item as! BallView).backgroundColor = UIColor.purpleColor()
+            default:
                 (item as! BallView).backgroundColor = UIColor.whiteColor()
-                
+}
+            if itemVelocity.magnitude <= 0.0 { return }
+            if itemVelocity.magnitude < min {
                 let deltaVelocity = min/itemVelocity.magnitude * itemVelocity - itemVelocity
-                //            addLinearVelocity(deltaVelocity, forItem: item)
+//                println ("magnitude = \(itemVelocity.magnitude) delta = \(deltaVelocity)")
+                            addLinearVelocity(deltaVelocity, forItem: item)
             }
             if itemVelocity.magnitude > max  {
                 //            println(itemVelocity.magnitude )

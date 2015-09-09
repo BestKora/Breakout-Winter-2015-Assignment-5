@@ -13,7 +13,7 @@ class BreakoutView: UIView {
 
     var behavior = BreakoutBehavior()
     
-    var balls = [BallView]()
+    var balls: [BallView]  {return self.behavior.balls}
     var bricks =  [Int:BrickView]()
     
     lazy var paddle: PaddleView = {
@@ -32,6 +32,20 @@ class BreakoutView: UIView {
         }
     }
     
+    var paddleWidthPercentage :Int = Constants.PaddleWidthPercentage {
+        didSet{
+            if  paddleWidthPercentage == oldValue{ return}
+            resetPaddleInCenter()
+        }
+    }
+    
+    var launchSpeedModifier: Float = 1.0 {
+        didSet{
+           launchSpeed = Constants.minLaunchSpeed + (Constants.maxLaunchSpeed - Constants.minLaunchSpeed) * CGFloat(launchSpeedModifier)
+        }
+    }
+    
+    private var launchSpeed:CGFloat = Constants.minLaunchSpeed
     private var columns: Int?
   
     // MARK: - LIFE CYCLE
@@ -49,8 +63,7 @@ class BreakoutView: UIView {
          resetPaddlePosition()
     }
 
-    func resetLayout()
-    {
+    func resetLayout() {
         var gameBounds = self.bounds
         gameBounds.size.height *= 2.0
         behavior.addBoundary(UIBezierPath(rect: gameBounds), named: Constants.selfBoundaryId)
@@ -66,9 +79,7 @@ class BreakoutView: UIView {
         }
     }
 
- 
-    func reset()
-    {
+    func reset(){
        removeBricks()
        removeAllBalls()
        createBricks()
@@ -81,27 +92,28 @@ class BreakoutView: UIView {
         let ball = BallView(frame: CGRect(origin: CGPoint(x: paddle.center.x,
                                                           y: paddle.frame.minY - Constants.BallSize.height),
                                                        size: Constants.BallSize))
-        balls.append(ball)
         self.behavior.addBall(ball)
+        behavior.launchBall(ball, magnitude: launchSpeed, minAngle: Constants.minBallLaunchAngle, maxAngle: Constants.maxBallLaunchAngle)
     }
     
     func removeBall(ball: BallView){
         self.behavior.removeBall(ball)
-        if let index = find(balls, ball) {
-            balls.removeAtIndex(index)
+    }
+    
+    func removeAllBalls(){
+        behavior.removeAllBalls()
+    }
+    
+    func pushBalls(){
+        for ball in balls {
+            behavior.launchBall(ball, magnitude: Constants.pushSpeed)
         }
     }
-    
-     private  func removeAllBalls(){
-        behavior.removeAllBalls()
-        balls = [BallView]()
-    }
-    
+
     private func placeBallInCenter(ball: UIView) {
         ball.center = self.center
     }
     
-
     // MARK: - BRICKS
     
     private func createBricks() {
@@ -188,14 +200,6 @@ class BreakoutView: UIView {
     
     // MARK: - PADDLE
 
- 
-    var paddleWidthPercentage :Int = 33 {
-        didSet{
-            if  paddleWidthPercentage == oldValue{ return}
-         resetPaddleInCenter()
-         }
-    }
-    
     private var paddleSize : CGSize {
         let width = self.bounds.size.width / 100.0 * CGFloat(paddleWidthPercentage)
         return CGSize(width: width, height: CGFloat(Constants.PaddleHeight))
@@ -210,7 +214,7 @@ class BreakoutView: UIView {
             }
         }
         paddle.frame = newFrame;
-        updatePaddleBoundary()
+        behavior.addBoundary(UIBezierPath(ovalInRect: paddle.frame), named: Constants.paddleBoundaryId)
     }
     
     private func resetPaddleInCenter(){
@@ -225,14 +229,9 @@ class BreakoutView: UIView {
         } else {
             paddle.center = CGPoint(x: paddle.center.x, y: self.bounds.maxY - paddle.bounds.height - Constants.PaddleBottomMargin)
         }
-        
-        updatePaddleBoundary()
+       behavior.addBoundary(UIBezierPath(ovalInRect: paddle.frame), named: Constants.paddleBoundaryId)
     }
     
-    private func updatePaddleBoundary() {
-        behavior.addBoundary(UIBezierPath(ovalInRect: paddle.frame), named: Constants.paddleBoundaryId)
-    }
-
     struct Constants {
         static let selfBoundaryId = "selfBoundary"
         static let paddleBoundaryId = "paddleBoundary"
@@ -242,10 +241,20 @@ class BreakoutView: UIView {
         static let PaddleBottomMargin: CGFloat = 10.0
         static let PaddleHeight: Int = 15
         static let PaddleColor = UIColor.whiteColor()
+        static let PaddleWidthPercentage:Int = 33
+
+
         static let BrickHeight: CGFloat = 20.0
         static let BrickSpacing: CGFloat = 5.0
         static let BricksTopSpacing: CGFloat = 20.0
         static let BrickSideSpacing: CGFloat = 10.0
+        
+        static let minBallLaunchAngle = 210
+        static let maxBallLaunchAngle = 330
+        static let minLaunchSpeed = CGFloat(0.2)
+        static let maxLaunchSpeed = CGFloat(0.8)
+        static let pushSpeed = CGFloat(0.05)
+
     }
     
 }
