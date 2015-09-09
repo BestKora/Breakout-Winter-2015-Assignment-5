@@ -46,17 +46,18 @@ class BreakoutView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-             resetLayout()
+         resetPaddlePosition()
     }
 
-    private func resetLayout()
+    func resetLayout()
     {
         var gameBounds = self.bounds
         gameBounds.size.height *= 2.0
         behavior.addBoundary(UIBezierPath(rect: gameBounds), named: Constants.selfBoundaryId)
         
         resetPaddlePosition()
-          // If needed put ball back inside breakoutView after rotation
+        resetBricks()
+          // Если необходимо, помещаем ball обратно в breakoutView после вращения
         for ball in balls {
             if !CGRectContainsRect(self.bounds, ball.frame) {
                 placeBallInCenter(ball)
@@ -97,9 +98,6 @@ class BreakoutView: UIView {
     }
     
     private func placeBallInCenter(ball: UIView) {
-// ???
-        let ballViewOrigin = CGPoint(x: bounds.midX - Constants.BallSize.width / 2,
-            y: bounds.maxY - Constants.PaddleBottomMargin - Constants.BallSize.height / 2)
         ball.center = self.center
     }
     
@@ -109,8 +107,8 @@ class BreakoutView: UIView {
     private func createBricks() {
         if let arrangement = level {
             
-            if arrangement.count == 0 { return }    // no rows
-            if arrangement[0].count == 0 { return } // no columns
+            if arrangement.count == 0 { return }    // no строк
+            if arrangement[0].count == 0 { return } // no столбцов
             
             let rows = arrangement.count
             let columns = arrangement[0].count
@@ -169,7 +167,7 @@ class BreakoutView: UIView {
         }
     }
     
-    func resetBricks(){
+    private func resetBricks(){
         var activeBricksSet = Set(bricks.keys)
         removeBricks()
         createBricks()
@@ -215,12 +213,12 @@ class BreakoutView: UIView {
         updatePaddleBoundary()
     }
     
-    func resetPaddleInCenter(){
+    private func resetPaddleInCenter(){
         paddle.center = CGPointZero
         resetPaddlePosition()
     }
     
-    func resetPaddlePosition() {
+    private func resetPaddlePosition() {
        paddle.frame.size = paddleSize
        if !CGRectContainsRect(self.bounds, paddle.frame) {
             paddle.center = CGPoint(x: self.bounds.midX, y: self.bounds.maxY - paddle.bounds.height - Constants.PaddleBottomMargin)

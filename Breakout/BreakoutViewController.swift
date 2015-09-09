@@ -88,16 +88,15 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        // Reset bricks when rotation changes
+        // Переустановка при вращении
         if gameViewSizeChanged {
             gameViewSizeChanged = false
-            breakoutView.resetBricks()
-            breakoutView.resetPaddleInCenter()
+            breakoutView.resetLayout()
 
         }
     }
     
-  // MARK: - Load SEIITINGS
+  // MARK: - LoAD SEIITINGS
     
    private func loadSettings() {
         
