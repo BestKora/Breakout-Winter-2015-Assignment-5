@@ -57,23 +57,28 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         super.viewWillAppear(animated)
         loadSettings()
         // Restart balls when tabbing back to Breakout game
+/*
         if !ballVelocity.isEmpty {
             for i in 0..<breakoutView.behavior.balls.count {
                 breakoutView.behavior.startBall(breakoutView.behavior.balls[i], velocity: ballVelocity[i])
             }
         }
+ */
+        breakoutView.ballVelocity = ballVelocity
         
-
     }
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         AppDelegate.Motion.Manager.stopAccelerometerUpdates()
         // Stop balls
+/*
         ballVelocity = []
         for ball in breakoutView.behavior.balls {
             ballVelocity.append(breakoutView.behavior.stopBall(ball))
         }
+*/
+        ballVelocity = breakoutView.ballVelocity
     }
 
    
@@ -135,6 +140,8 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
         }
     }
     
+    // MARK: - Ball LEFT
+ 
     func ballLeftPlayingField(ball: BallView)
     {
         if(ballsUsed == maxBalls) { // the last ball just left the playing field
@@ -198,13 +205,13 @@ class BreakoutViewController: UIViewController, BreakoutCollisionBehaviorDelegat
     private struct Const {
         static let gameOverTitle = "Game over!"
         static let congratulationsTitle = "Congratulations!"
-        
+ /*
         static let minBallLaunchAngle = 210
         static let maxBallLaunchAngle = 330
         static let minLaunchSpeed = CGFloat(0.2)
         static let maxLaunchSpeed = CGFloat(0.8)
         static let pushSpeed = CGFloat(0.05)
-        
+  */
         static let maxPaddleSpeed = 25.0
     }
 }

@@ -9,7 +9,9 @@
 import UIKit
 class BreakoutView: UIView {
     
-    lazy var animator: UIDynamicAnimator = {UIDynamicAnimator(referenceView: self)}()
+    lazy var animator: UIDynamicAnimator = {
+                           UIDynamicAnimator(referenceView: self)
+        }()
 
     var behavior = BreakoutBehavior()
     
@@ -17,7 +19,8 @@ class BreakoutView: UIView {
     var bricks =  [Int:BrickView]()
     
     lazy var paddle: PaddleView = {
-        let paddle = PaddleView(frame: CGRect(origin: CGPointZero, size: self.paddleSize))
+        let paddle = PaddleView(frame: CGRect(origin: CGPointZero,
+                                                size: self.paddleSize))
         self.addSubview(paddle)
         return paddle
         }()
@@ -41,7 +44,9 @@ class BreakoutView: UIView {
     
     var launchSpeedModifier: Float = 1.0 {
         didSet{
-           launchSpeed = Constants.minLaunchSpeed + (Constants.maxLaunchSpeed - Constants.minLaunchSpeed) * CGFloat(launchSpeedModifier)
+           launchSpeed = Constants.minLaunchSpeed +
+                         (Constants.maxLaunchSpeed - Constants.minLaunchSpeed) *
+                                                    CGFloat(launchSpeedModifier)
         }
     }
     
@@ -112,6 +117,25 @@ class BreakoutView: UIView {
 
     private func placeBallInCenter(ball: UIView) {
         ball.center = self.center
+    }
+    
+    var ballVelocity: [CGPoint]
+        {
+        get {
+            var ballVelocityLoc = [CGPoint]()
+            for ball in balls {
+                ballVelocityLoc.append(behavior.stopBall(ball))
+            }
+           return ballVelocityLoc
+        }
+        set {
+            var ballVelocityLoc = newValue as [CGPoint]
+            if !newValue.isEmpty {
+                for i in 0..<balls.count {
+                   behavior.startBall(behavior.balls[i], velocity: ballVelocityLoc[i])
+                }
+            }
+        }
     }
     
     // MARK: - BRICKS
